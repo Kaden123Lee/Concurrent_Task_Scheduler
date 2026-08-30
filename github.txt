@@ -1,0 +1,75 @@
+From this workspace, use this workflow:
+
+### Push changes
+
+```bash
+git status
+git add .
+git commit -m "Describe what changed"
+git push -u origin main
+```
+
+After the first push, future pushes only need:
+
+```bash
+git add .
+git commit -m "Describe what changed"
+git push
+```
+
+### Review before pushing
+
+See changed files:
+
+```bash
+git status
+```
+
+Review unstaged changes:
+
+```bash
+git diff
+```
+
+Review staged changes:
+
+```bash
+git diff --staged
+```
+
+Review commits that have not been pushed:
+
+```bash
+git log origin/main..HEAD --oneline
+```
+
+Review the complete patch awaiting push:
+
+```bash
+git diff origin/main..HEAD
+```
+
+### Review after pushing
+
+See recent commits:
+
+```bash
+git log --oneline --graph --decorate -10
+```
+
+Or open your repository on GitHub:
+
+[Concurrent_Task_Scheduler](https://github.com/Kaden123Lee/Concurrent_Task_Scheduler)
+
+Select **Commits** to inspect pushed commits and their file changes.
+
+A safe everyday sequence is:
+
+```bash
+git status
+git diff
+git add .
+git diff --staged
+git commit -m "Add scheduler functionality"
+git push
+```

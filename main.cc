@@ -20,11 +20,11 @@ NUMA basics
 
 1. TASKS : 3-5 Tasks
    "Here is work that needs doing"
-   1. CPU Math Task
-   2. Array Sort Task
-   3. Memory Scan Task
-   4. Shared Counter Task
-   5. Producer/Consumer Task
+   1. CPU Math Task : Repeatedly compute something expensive, like prime checks or floating-point math.
+   2. Array Sort Task : Generate an array of random integers and sort it.
+   3. Memory Scan Task : Allocate a large array and repeatedly sum or modify every element.
+   4. Shared Counter Task : Have many tasks increment shared counters millions of times.
+   5. Producer/Consumer Task : One task produces data and signals that it is ready; another task reads it.
         │
         ▼
 2. TASK QUEUES

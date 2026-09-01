@@ -1,4 +1,7 @@
 #include <cmath>
+#include <vector>
+#include <algorithm>
+
 /*
 Notes: After thinking out the fast way to calculate prime numbers i went back to what i knew, there is not a fits right all solution
 as such iv desided to implment 5 kinds.
@@ -81,13 +84,13 @@ void el_prime(vector<bool>& vc, int index) {
     }
 }
 
-int PPN_medium_small(int start_num, int end_num) {
+int PPN_medium(int start_num, int end_num) {
     int count_prime = 0;
-    vector<bool> isPrime(end_num + 1, true);
+    vector<bool> isPrime((end_num - start_num) + 1, true);  
 
-    // Only process odd candidates
+    // Only process odd candidates : i dont think we change this it seems essential. 
     for (int i = 3; i * i <= end_num; i += 2) {
-        if (isPrime[i]) {
+        if (isPrime[i]) { // I belive this is a problem : we are saying if the first one is true, then you take
             el_prime(isPrime, i);
         }
     }
@@ -115,12 +118,73 @@ int PPN_medium_small(int start_num, int end_num) {
 }
 
 
-int PPN_large(int start_num, int end_num)
-{
-    // Segmented Sieve should be the one you push to the brink.
-}
+int PPN_large(int start_num, in end_num){
+    // Step # 1 : Find all the primes from 0 -> sqrt(end_num) 
+    // Also we are going to be working with 2 vectors in this area so def room for improvement
+    int limit = sqrt(end_num); // We dont want to go past this
+    vector<bool> smallPrime(limit + 1, true);
+    smallPrime[0] = false; 
 
-int PPN_largest(int start_num, int end_num)
-{
-    //Lehmer Prime Counting
+    if(limit > 1){
+        smallPrime[1] = false; 
+    }
+
+    for(int p = 2; p * p <= limit; ++p){
+        if(smallPrime[p]) {
+            for(int multiple = p * p; multiple <= limit; multiple += p){
+                smallPrime[multiple] = false; 
+            }
+        }
+    }
+
+    // Step # 2 : This vector repersents only from start_num -> end_num
+    vector<bool> isPrime((end_num - start_num) + 1, true);
+
+    //Step # 3 : Take each small prime and eliminate its multiples inside of our segment
+    /*
+    Take p
+    ↓
+    Find first multiple of p in our segment
+    ↓
+    Jump through the segment by p
+    ↓
+    Mark each of those multiples false
+    */
+    for(int p = 2; p <= limit; ++p){
+        if(!smallPrime[p]){
+            continue;
+        }
+
+        // Find the first multiple of p >= start_num, we dont want to check every number in the segment. This caluclates where to start
+        // from the small prime to the others even tho they might not be in the bigger vector like 105 is divisable by 7,
+        // so we need to know is that the first one we should elminiate? is it even in the vector we are working with?
+        // Find where prime p should begin crossing things out in this segment.
+        int first = ((start_num + p - 1) / p ) * p;
+        // Don't eliminate p itself. 
+        first = max(first, p * p)
+        for(int number = first; number <= end_num; number += p){
+            // number is the real number , number - start = its vector index
+            isPrime[number - start_num] = false; 
+        }
+    }
+    
+
+    // Step #4: 0 and 1 are not primes.
+
+    for(int number = start_num; number <= min(end_num, 1); ++number){ // Stop at whichever is smaller: end_num or 1.
+        if(number >= 0){
+            isPrime[number - start_num] = false; 
+        }
+    }
+
+    //Step #5: Count whatever survived.
+    int count_prime = 0;
+
+    for(int number = max(start_num, 2); number <= end_num; ++number){
+        if(isPrime[number - start_num]){
+            count_prime++;
+        }
+    }
+    return count_prime
+
 }

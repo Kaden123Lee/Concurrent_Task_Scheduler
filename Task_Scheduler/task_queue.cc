@@ -47,8 +47,20 @@ std::unique_lock<std::mutex> lock(mutex_);
 We do this because a worker might find out that the queue is empty and as such they need to sleep until a task arrives. it needs to do a lot
 1. Lock mutex, 2. Check queue, 3. Queue empty → UNLOCK mutex, 4. Sleep, 5. Get notified, 6. LOCK mutex again, 7. Check queue
 
+ cv_.wait(lock, [this] { return !tasks_.empty() || stopping_;});
+ 
+- Put this thread to sleep until either there is a task in the queue or we are stopping.
+- lock is a unique_lock object whose job is to manage ownership of mutex_.
+- [this] is the lambda's capture list. It captures the this pointer, which points to the current TaskQueue object.
 
+Lambda = [capture](parameters) { code } which in this case is a this pointer which is a pointer to the TaskQueue
 
+- Because we captured this, the lambda can access TaskQueue members like tasks_ and stopping_.
+- The lambda returns true when there is work or shutdown has started.
+- wait() can wake up spuriously. The predicate/lambda version automatically checks the condition again and goes back to sleep if it's still false.
+
+task = std::move(tasks_.front()); 
+- takes the task at the front of task_ and moves its contents into task instead of copying. 
 
 
 
@@ -63,13 +75,27 @@ bool TaskQueue::pop(Task& task) {
     if(stopping_ && tasks_.empty()){return false;}
 
     task = std::move(tasks_.front());
-    tasks_.pop();
+    tasks_.pop(); // Remove only the front element from this queue.
     return true;
 }
 
 
 
 // 3. Finally this
-void TaskQueue::shutdown() {
+/*
+std::lock_guard<std::mutex> lock(mutex_);
+- lock_guard is the type of object that we are creating
+- mutex is the kind of lock it manages 
+- lock = varaible name
+- mutex_ is the spesific mutex. 
 
+
+*/
+void TaskQueue::shutdown() {
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        stopping_ = true;
+    }
+
+    cv_.notify_all(); // Wake up ALL threads that are currently sleeping/waiting on this condition variable cv_.
 }

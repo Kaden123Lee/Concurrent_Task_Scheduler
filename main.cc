@@ -1,43 +1,35 @@
+#include <iostream>
+#include "Workers/scheduler.h"
+
+int main() {
+    Scheduler scheduler(4);
+
+    scheduler.start();
+
+    std::mutex coutMutex;
+
+   for (int i = 0; i < 10; ++i) {
+      scheduler.submit([i, &coutMutex] {
+         std::lock_guard<std::mutex> lock(coutMutex);
+         std::cout << "Running task " << i << '\n';
+      });
+   }
+
+    scheduler.shutdown();
+
+    return 0;
+}
+
+
 /*
-Project 2
-Concurrent Task Scheduler
-Covers:
-threads
-mutexes
-atomics
-memory ordering
-false sharing
-affinity
-NUMA basics
-*/
-
-
-
-
-/*
-! We are going to be doing this one task at a time so what that means is lets develop the first task which will be a (CPU MATH TASK) we are then going to go through
-! all phases so from task -> task queue -> scheudling workers -> execution. 
-
-1. TASKS : 3-5 Tasks
-   "Here is work that needs doing"
-   1. CPU Math Task : Repeatedly compute something expensive, like prime checks or floating-point math.
-   2. Array Sort Task : Generate an array of random integers and sort it.
-   3. Memory Scan Task : Allocate a large array and repeatedly sum or modify every element.
-   4. Shared Counter Task : Have many tasks increment shared counters millions of times.
-   5. Producer/Consumer Task : One task produces data and signals that it is ready; another task reads it.
-        │
-        ▼
-2. TASK QUEUES
-   "Here is the work waiting to run"
-        │
-        ▼
-3. SCHEDULING / WORKERS
-   "Who should execute the next task?"
-        │
-        ▼
-4. EXECUTION + RESULTS
-   Run task → finish → return/store result
-
-
-
+Which worker executes each task?
+How evenly are tasks distributed between workers?
+How much faster are 2, 4, 8, 16 workers than 1?
+At what worker count does performance stop improving? Why?
+How long does a task wait in the queue before execution?
+How long does each task actually execute?
+How much scheduler overhead exists for very small tasks?
+Does task size change the optimal worker count?
+What happens if there are more workers than CPU cores?
+Where is contention occurring in the current shared-queue design
 */

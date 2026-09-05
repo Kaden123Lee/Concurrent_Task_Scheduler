@@ -75,7 +75,7 @@ int PPN_Brute(int start_num, int end_num)
 Sieve : If 2 is prime, then every multiple of 2 is definitely not prime. // Basic Sieve of Eratosthene
 
 */
-void el_prime(vector<bool>& vc, int index) {
+void el_prime(std::vector<bool>& vc, int index) {
     int number = index * index;
 
     while (number < vc.size()) {
@@ -86,7 +86,7 @@ void el_prime(vector<bool>& vc, int index) {
 
 int PPN_medium(int start_num, int end_num) {
     int count_prime = 0;
-    vector<bool> isPrime((end_num - start_num) + 1, true);  
+    std::vector<bool> isPrime((end_num - start_num) + 1, true);  
 
     // Only process odd candidates : i dont think we change this it seems essential. 
     for (int i = 3; i * i <= end_num; i += 2) {
@@ -101,7 +101,7 @@ int PPN_medium(int start_num, int end_num) {
     }
 
     // Start counting from an odd number >= 3
-    int start = max(start_num, 3);
+    int start = std::max(start_num, 3);
 
     if (start % 2 == 0) {
         start++;
@@ -118,11 +118,11 @@ int PPN_medium(int start_num, int end_num) {
 }
 
 
-int PPN_large(int start_num, in end_num){
+int PPN_large(int start_num, int end_num){
     // Step # 1 : Find all the primes from 0 -> sqrt(end_num) 
     // Also we are going to be working with 2 vectors in this area so def room for improvement
     int limit = sqrt(end_num); // We dont want to go past this
-    vector<bool> smallPrime(limit + 1, true);
+    std::vector<bool> smallPrime(limit + 1, true);
     smallPrime[0] = false; 
 
     if(limit > 1){
@@ -138,7 +138,7 @@ int PPN_large(int start_num, in end_num){
     }
 
     // Step # 2 : This vector repersents only from start_num -> end_num
-    vector<bool> isPrime((end_num - start_num) + 1, true);
+    std::vector<bool> isPrime((end_num - start_num) + 1, true);
 
     //Step # 3 : Take each small prime and eliminate its multiples inside of our segment
     /*
@@ -161,7 +161,7 @@ int PPN_large(int start_num, in end_num){
         // Find where prime p should begin crossing things out in this segment.
         int first = ((start_num + p - 1) / p ) * p;
         // Don't eliminate p itself. 
-        first = max(first, p * p)
+        first = std::max(first, p * p);
         for(int number = first; number <= end_num; number += p){
             // number is the real number , number - start = its vector index
             isPrime[number - start_num] = false; 
@@ -171,7 +171,7 @@ int PPN_large(int start_num, in end_num){
 
     // Step #4: 0 and 1 are not primes.
 
-    for(int number = start_num; number <= min(end_num, 1); ++number){ // Stop at whichever is smaller: end_num or 1.
+    for(int number = start_num; number <= std::min(end_num, 1); ++number){ // Stop at whichever is smaller: end_num or 1.
         if(number >= 0){
             isPrime[number - start_num] = false; 
         }
@@ -180,11 +180,11 @@ int PPN_large(int start_num, in end_num){
     //Step #5: Count whatever survived.
     int count_prime = 0;
 
-    for(int number = max(start_num, 2); number <= end_num; ++number){
+    for(int number = std::max(start_num, 2); number <= end_num; ++number){
         if(isPrime[number - start_num]){
             count_prime++;
         }
     }
-    return count_prime
+    return count_prime;
 
 }
